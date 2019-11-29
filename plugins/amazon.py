@@ -22,3 +22,4 @@ class AmazonThirdParty(mambase.RegexMetaDataCheck):
         {"metadata": "ordernumber", "regex": "Bestellnummer\n+(.*)",},
     ]
 
+__plugin__ = [AmazonThirdParty]

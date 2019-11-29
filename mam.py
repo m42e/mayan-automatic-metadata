@@ -39,7 +39,7 @@ def get_mayan():
 def main():
     m = get_mayan()
     _logger.info("load documents")
-    process(m, '1206')
+    process(m, '1204')
     return
     documents = m.all("documents")
     for document in documents:
@@ -83,8 +83,9 @@ def process(m, document):
         importlib.invalidate_caches()
         mod = importlib.import_module(modulename)
         importlib.reload(mod)
-        classes = [m[0] for m in inspect.getmembers(mod, lambda x: isinstance(x, mambase.MetaDataCheck)) if m[1].__module__ == modulename]
-        for cls in classes:
+        if not hasattr(mod, '__plugin__'):
+            continue
+        for cls in mod.__plugin__:
             checker = cls()
             _logger.info(
                 "Checking content with %s, %s for doc: %s %d",
