@@ -2,5 +2,5 @@
 
 - Create virtualenv
 - install requests
-- call python mam.py --url https://<yourinstance>/api --username <someuser> --password <password>
+- call ˋpython mam.py --url https://<yourinstance>/api --username <someuser> --password <password>ˋ
 
