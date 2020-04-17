@@ -6,7 +6,6 @@ import logging
 
 _logger = logging.getLogger(__name__)
 
-BASE_URL = "https://docs.growcoaching.de:443/api/"
 
 
 class Endpoint(object):
@@ -17,7 +16,7 @@ class Endpoint(object):
             base += "api/"
             endpoint, self._paramstring = endpoint.split("?", 1)
         if base is None:
-            base = BASE_URL
+            raise Exception('missing base')
         if not base.endswith("/"):
             base = base + "/"
 
