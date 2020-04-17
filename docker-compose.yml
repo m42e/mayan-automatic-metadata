@@ -1,0 +1,20 @@
+version: '2'
+
+services:
+  mayan-mam-web:
+    container_name: mayan-mam-web
+    image: m42e/mayan-mam-web
+    restart: always
+    environment:
+      REDIS_URL: redis://results:6379/
+      
+  mayan-mam-worker:
+    container_name: mayan-mam-worker
+    image: m42e/mayan-mam-worker
+    restart: always
+    environment:
+      REDIS_URL: redis://results:6379/
+      MAYAN_USER: mam-user
+      MAYAN_PASSWORD: secretpassword
+      MAYAN_URL: https://yourinstance/api/
+
