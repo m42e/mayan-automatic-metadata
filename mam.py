@@ -18,19 +18,18 @@ _logger = logging.getLogger(__name__)
 
 
 def get_options():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--username", type=str, default=os.getenv("MAYAN_USER"))
-    parser.add_argument("--password", type=str, default=os.getenv("MAYAN_PASSWORD"))
-    parser.add_argument("--url", type=str, default=os.getenv("MAYAN_URL"))
-    args = parser.parse_args()
-    return args
+    config = {}
+    config["username"] = os.getenv("MAYAN_USER")
+    config["password"] = os.getenv("MAYAN_PASSWORD")
+    config["url"] = os.getenv("MAYAN_URL")
+    return config
 
 
 def get_mayan():
     _logger.info("logging in")
     args = get_options()
-    m = mayan.Mayan(args.url)
-    m.login(args.username, args.password)
+    m = mayan.Mayan(args["url"])
+    m.login(args["username"], args["password"])
     _logger.info("load meta informations")
     m.load()
     return m
@@ -39,7 +38,7 @@ def get_mayan():
 def main():
     m = get_mayan()
     _logger.info("load documents")
-    process(m, '1204')
+    process(m, "1204")
     return
     documents = m.all("documents")
     for document in documents:
@@ -53,6 +52,13 @@ def main():
                 document["label"],
                 document["id"],
             )
+
+
+def single(document):
+    m = get_mayan()
+    _logger.info("load documents")
+    process(m, document)
+
 
 def process(m, document):
     if isinstance(document, str) and document.isnumeric():
@@ -72,38 +78,46 @@ def process(m, document):
         except:
             pass
 
-
     original_pythonpath = sys.path
-    sys.path.append('plugins')
-    _, _, files = next(os.walk('plugins'))
+    sys.path.append("plugins")
+    _, _, files = next(os.walk("plugins"))
     for file in files:
-        if not file.endswith('.py'):
+        if not file.endswith(".py"):
             continue
         modulename = file[:-3]
-        importlib.invalidate_caches()
-        mod = importlib.import_module(modulename)
-        importlib.reload(mod)
-        if not hasattr(mod, '__plugin__'):
+        try:
+            importlib.invalidate_caches()
+            mod = importlib.import_module(modulename)
+            importlib.reload(mod)
+        except:
+            _logger.exception("Could not load module %s", modulename)
+        if not hasattr(mod, "__plugin__"):
+            _logger.warn("skipping %s", modulename)
             continue
         for cls in mod.__plugin__:
             checker = cls()
             _logger.info(
-                "Checking content with %s, %s for doc: %s %d",
+                "Checking content with %s (%s), %s for doc: %s %d",
                 checker.__class__.__name__,
+                file,
                 modulename,
                 document["label"],
                 document["id"],
             )
             if not checker.for_documentclass(document["document_type"]["label"]):
+                _logger.info("Skipping based on document class")
                 continue
             if not checker.for_content(complete_content):
+                _logger.info("Skipping based on content")
                 continue
             metadata = checker.get_metadata(complete_content)
             doc_metadata = {
                 x["metadata_type"]["name"]: x
                 for x in m.all(m.ep("metadata", base=document["url"]))
             }
-            for meta in m.document_types[document["document_type"]["label"]]["metadatas"]:
+            for meta in m.document_types[document["document_type"]["label"]][
+                "metadatas"
+            ]:
                 meta_name = meta["metadata_type"]["name"]
                 if meta_name in metadata:
                     if meta_name not in doc_metadata:
@@ -141,13 +155,8 @@ def process(m, document):
                     _logger.info("Tag %s not defined in system", t)
                     continue
                 data = {"tag_pk": m.tags[t]["id"]}
-                result = m.post(
-                    m.ep("tags", base=document["url"]), json_data=data
-                )
-                print(result)
+                result = m.post(m.ep("tags", base=document["url"]), json_data=data)
     sys.path = original_pythonpath
-
-
 
 
 if __name__ == "__main__":
