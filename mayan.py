@@ -39,9 +39,9 @@ class Endpoint(object):
         return paramstring
 
     def __repr__(self):
-        https_base = re.sub(r":80", ":443", self.base)
-        https_base = re.sub(r"http:", "https:", https_base)
-        return f"{https_base}{self.endpoint}?{self.paramstring}"
+        ep_api_call = f"{self.base}{self.endpoint}?{self.paramstring}"
+        _logger.debug("endpoint api call %s", ep_api_call)
+        return ep_api_call
 
     __str__ = __repr__
 
