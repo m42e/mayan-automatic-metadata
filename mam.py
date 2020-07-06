@@ -56,13 +56,22 @@ def main():
 
 def single(document):
     m = get_mayan()
-    _logger.info("load documents")
+    _logger.info("load document %s", document)
     process(m, document)
 
 
 def process(m, document):
-    if isinstance(document, str) and document.isnumeric():
-        document = m.get(m.ep(f"documents/{document}"))
+    if isinstance(document, str):
+        if document.isnumeric():
+            document = m.get(m.ep(f"documents/{document}"))
+        else:
+            _logger.error("document value %s must be numeric", document)
+            return
+
+    if not isinstance(document, dict):
+        _logger.error("could not retrieve document")
+        return
+
     versions = m.get(document["latest_version"]["url"])
     pages = m.all(m.ep("pages", base=document["latest_version"]["url"]))
     complete_content = ""
