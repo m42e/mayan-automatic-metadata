@@ -37,12 +37,10 @@ def get_mayan():
 
 def main():
     m = get_mayan()
-    _logger.info("load documents")
-    process(m, "1204")
-    return
+    _logger.info("load all documents")
     documents = m.all("documents")
     for document in documents:
-        _logger.info("Document {}".format(str(document)))
+        _logger.info("document %s", str(document))
         tags = m.first(m.ep("tags", base=document["url"]))
         if not any(map(lambda x: x["label"] == "MAM", tags)):
             process(m, document)
