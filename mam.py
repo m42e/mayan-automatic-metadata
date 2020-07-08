@@ -155,7 +155,7 @@ def process(m, document):
 
             tags = checker.get_tags(complete_content)
             if len(tags) == 0:
-                continue
+                tags = []
             tags.append("MAM")
             for t in tags:
                 if t not in m.tags:
