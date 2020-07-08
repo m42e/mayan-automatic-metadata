@@ -74,13 +74,13 @@ def process(m, document):
     pages = m.all(m.ep("pages", base=document["latest_version"]["url"]))
     complete_content = ""
     for page in pages:
-        content = m.get(m.ep("content", base=page["url"]))
         try:
+            content = m.get(m.ep("ocr", base=page["url"]))
             complete_content += content["content"]
         except:
             pass
+        content = m.get(m.ep("content", base=page["url"]))
         try:
-            content = m.get(m.ep("ocr", base=page["url"]))
             complete_content += content["content"]
         except:
             pass
