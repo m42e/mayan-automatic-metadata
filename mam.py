@@ -4,6 +4,7 @@ import importlib
 import inspect
 import json
 import logging
+from logging.config import fileConfig
 import mayan
 import os
 import re
@@ -13,11 +14,13 @@ from plugins import mambase
 from typing import List, Dict
 from pprint import pprint
 
-logging.basicConfig(level=logging.DEBUG)
+# read initial config file - make sure we don't squash any loggers 
+# not specifically declared in the config file.
+fileConfig('/app/config/logging.ini', disable_existing_loggers=False)
 _logger = logging.getLogger(__name__)
 
-
 def get_options():
+    _logger.info("performing initial configuration")
     config = {}
     config["username"] = os.getenv("MAYAN_USER")
     config["password"] = os.getenv("MAYAN_PASSWORD")
