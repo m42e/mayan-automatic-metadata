@@ -15,7 +15,7 @@ def hello_world():
     return 'Nothing Here'
 
 
-@app.route('/<document_id>', methods=['GET', 'POST'])
+@app.route('/<int:document_id>', methods=['GET', 'POST'])
 def trigger_mam(document_id):
-    q.enqueue(single, document_id)
+    q.enqueue(single, str(document_id))
     return 'OK'
