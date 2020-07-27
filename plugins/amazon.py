@@ -1,3 +1,5 @@
+# Modified sample taken from https://github.com/m42e/mayan-automatic-metadata/pull/2
+
 import mambase
 import utils
 
