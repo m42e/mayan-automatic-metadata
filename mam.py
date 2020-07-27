@@ -37,12 +37,10 @@ def get_mayan():
 
 def main():
     m = get_mayan()
-    _logger.info("load documents")
-    process(m, "1204")
-    return
+    _logger.info("load all documents")
     documents = m.all("documents")
     for document in documents:
-        _logger.info("Document {}".format(str(document)))
+        _logger.info("document %s", str(document))
         tags = m.first(m.ep("tags", base=document["url"]))
         if not any(map(lambda x: x["label"] == "MAM", tags)):
             process(m, document)
@@ -56,24 +54,33 @@ def main():
 
 def single(document):
     m = get_mayan()
-    _logger.info("load documents")
+    _logger.info("load document %s", document)
     process(m, document)
 
 
 def process(m, document):
-    if isinstance(document, str) and document.isnumeric():
-        document = m.get(m.ep(f"documents/{document}"))
+    if isinstance(document, str):
+        if document.isnumeric():
+            document = m.get(m.ep(f"documents/{document}"))
+        else:
+            _logger.error("document value %s must be numeric", document)
+            return
+
+    if not isinstance(document, dict):
+        _logger.error("could not retrieve document")
+        return
+
     versions = m.get(document["latest_version"]["url"])
     pages = m.all(m.ep("pages", base=document["latest_version"]["url"]))
     complete_content = ""
     for page in pages:
-        content = m.get(m.ep("content", base=page["url"]))
         try:
+            content = m.get(m.ep("ocr", base=page["url"]))
             complete_content += content["content"]
         except:
             pass
+        content = m.get(m.ep("content", base=page["url"]))
         try:
-            content = m.get(m.ep("ocr", base=page["url"]))
             complete_content += content["content"]
         except:
             pass
@@ -148,7 +155,7 @@ def process(m, document):
 
             tags = checker.get_tags(complete_content)
             if len(tags) == 0:
-                continue
+                tags = []
             tags.append("MAM")
             for t in tags:
                 if t not in m.tags:
