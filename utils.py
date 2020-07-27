@@ -5,31 +5,26 @@ import logging
 _logger = logging.getLogger(__name__)
 
 
-def parse_and_format_date(datestr):
-    dt = dateparser.parse(datestr, languages=["de", "en"])
-    fmtdate = dt.strftime("%Y-%m-%d")
-    _logger.info("Parsing %s result %s", datestr, fmtdate)
-    return fmtdate
+def parse_and_format_date(datestr, **kwargs):
+    try:
+        dt = dateparser.parse(datestr, **kwargs)
+        fmtdate = dt.strftime("%Y-%m-%d")
+        _logger.info("Parsing %s result %s", datestr, fmtdate)
+        return fmtdate
+    except:
+        _logger.exception("Could not parse %s as date", datestr)
+        return ""
 
 
-def parse_and_format_month_year(datestr):
-    dt = dateparser.parse(datestr, languages=["de", "en"])
-    fmtdate = dt.strftime("%Y-%m")
-    _logger.info("Parsing %s result %s", datestr, fmtdate)
-    return fmtdate
-
-
-def parse_and_format_date_german(datestr):
-    dt = datetime.datetime.strptime(datestr, "%d.%m.%Y")
-    fmtdate = dt.strftime("%Y-%m-%d")
-    _logger.info("Parsing %s result %s", datestr, fmtdate)
-    return fmtdate
-
-def parse_and_format_date_germanshort(datestr):
-    dt = datetime.datetime.strptime(datestr, "%d.%m.%y")
-    fmtdate = dt.strftime("%Y-%m-%d")
-    _logger.info("Parsing %s result %s", datestr, fmtdate)
-    return fmtdate
+def parse_and_format_month_year(datestr, **kwargs):
+    try:
+        dt = dateparser.parse(datestr, **kwargs)
+        fmtdate = dt.strftime("%Y-%m")
+        _logger.info("Parsing %s result %s", datestr, fmtdate)
+        return fmtdate
+    except:
+        _logger.exception("Could not parse %s as date", datestr)
+        return ""
 
 
 def select_highest_amount(matches):
