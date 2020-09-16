@@ -163,8 +163,8 @@ def process(m, document):
     tags.append("MAM")
     for t in tags:
         if t not in m.tags:
-        _logger.info("Tag %s not defined in system", t)
-        continue
+            _logger.info("Tag %s not defined in system", t)
+            continue
     data = {"tag_pk": m.tags[t]["id"]}
     result = m.post(m.ep("tags", base=document["url"]), json_data=data)
     sys.path = original_pythonpath
