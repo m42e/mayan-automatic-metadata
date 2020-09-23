@@ -88,6 +88,7 @@ def process(m, document):
         except:
             pass
 
+    tags = set(())
     original_pythonpath = sys.path
     sys.path.append("plugins")
     _, _, files = next(os.walk("plugins"))
@@ -156,18 +157,17 @@ def process(m, document):
                         )
                         pass
 
-            tags = checker.get_tags(complete_content)
-            if len(tags) == 0:
-                tags = []
-            tags.append("MAM")
-            for t in tags:
-                if t not in m.tags:
-                    _logger.info("Tag %s not defined in system", t)
-                    continue
-                data = {"tag_pk": m.tags[t]["id"]}
-                result = m.post(m.ep("tags", base=document["url"]), json_data=data)
-    sys.path = original_pythonpath
+            tags.update(checker.get_tags(complete_content))
+            tags.add("MAM")
+    
+    for t in tags:
+        if t not in m.tags:
+            _logger.info("Tag %s not defined in system", t)
+            continue
+        data = {"tag_pk": m.tags[t]["id"]}
+        result = m.post(m.ep("tags", base=document["url"]), json_data=data)
 
+    sys.path = original_pythonpath
 
 if __name__ == "__main__":
     main()
