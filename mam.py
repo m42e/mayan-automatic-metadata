@@ -74,7 +74,7 @@ def process(m, document):
         _logger.error("could not retrieve document")
         return
 
-    if documentep.version is not None:
+    if documentep.version:
         pages = m.all(m.ep("pages", base=document["file_latest"]["url"]))
     else:
         pages = m.all(m.ep("pages", base=document["latest_version"]["url"]))

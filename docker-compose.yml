@@ -16,5 +16,5 @@ services:
       REDIS_URL: redis://results:6379/
       MAYAN_USER: mam-user
       MAYAN_PASSWORD: secretpassword
-      MAYAN_URL: https://yourinstance/api/
+      MAYAN_URL: https://yourinstance/api/v4/
 
