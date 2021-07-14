@@ -1,6 +1,7 @@
 import requests
 import re
 import json
+from json import JSONDecodeError
 from typing import Union
 import logging
 
@@ -128,7 +129,10 @@ class Mayan(object):
         result = self.session.post(endpoint, json=json_data)
         if result.status_code not in [200, 201]:
             _logger.warning(json.dumps(result.json(), indent=2))
-        return result.json()
+        try:
+            return result.json()
+        except JSONDecodeError:
+            return {}
 
     def put(self, endpoint: Union[str, Endpoint], json_data):
         if endpoint is str:
@@ -139,7 +143,10 @@ class Mayan(object):
         result = self.session.put(endpoint, json=json_data)
         if result.status_code != 200:
             _logger.warning(json.dumps(result.json(), indent=2))
-        return result.json()
+        try:
+            return result.json()
+        except JSONDecodeError:
+            return {}
 
     def jp(self, data):
         if type(data) is requests.Response:
