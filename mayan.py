@@ -126,7 +126,7 @@ class Mayan(object):
             print("WOULD POST", str(endpoint), json.dumps(json_data, indent=2))
             return {}
         result = self.session.post(endpoint, json=json_data)
-        if result.status_code !=  201:
+        if result.status_code != 201:
             _logger.warning(json.dumps(result.json(), indent=2))
         return result.json()
 
