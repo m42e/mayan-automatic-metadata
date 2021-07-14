@@ -11,9 +11,14 @@ _logger = logging.getLogger(__name__)
 class Endpoint(object):
     def __init__(self, endpoint: str, *, params: dict = {}, base: str = None):
         self._paramstring = None
+        self.version = None
         if "://" in endpoint:
             base, endpoint = endpoint.split("api/", 1)
             base += "api/"
+            version = re.search("api/(v\d+)/", endpoint)
+            if version:
+                self.version = version.group(1)
+                base += self.version
             endpoint, self._paramstring = endpoint.split("?", 1)
         if base is None:
             raise Exception('missing base')
@@ -27,6 +32,10 @@ class Endpoint(object):
         if len(params) == 0:
             params = {}
 
+        if not self.version:
+            version = re.search("api/(v\d+)/", base)
+            if version:
+                self.version = version.group(1)
         self.base = base
         self.params = params
         self.endpoint = endpoint

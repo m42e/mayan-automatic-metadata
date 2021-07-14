@@ -64,7 +64,8 @@ def single(document):
 def process(m, document):
     if isinstance(document, str):
         if document.isnumeric():
-            document = m.get(m.ep(f"documents/{document}"))
+            documentep = m.ep(f"documents/{document}")
+            document = m.get(documentep)
         else:
             _logger.error("document value %s must be numeric", document)
             return
@@ -73,8 +74,10 @@ def process(m, document):
         _logger.error("could not retrieve document")
         return
 
-    versions = m.get(document["latest_version"]["url"])
-    pages = m.all(m.ep("pages", base=document["latest_version"]["url"]))
+    if documentep.version is not None:
+        pages = m.all(m.ep("pages", base=document["file_latest"]["url"]))
+    else:
+        pages = m.all(m.ep("pages", base=document["latest_version"]["url"]))
     complete_content = ""
     for page in pages:
         try:
@@ -164,8 +167,12 @@ def process(m, document):
         if t not in m.tags:
             _logger.info("Tag %s not defined in system", t)
             continue
-        data = {"tag_pk": m.tags[t]["id"]}
-        result = m.post(m.ep("tags", base=document["url"]), json_data=data)
+        if documentep.version:
+            data = {"tag": m.tags[t]["id"]}
+            result = m.post(m.ep("tags/attach", base=document["url"]), json_data=data)
+        else:
+            data = {"tag_pk": m.tags[t]["id"]}
+            result = m.post(m.ep("tags", base=document["url"]), json_data=data)
 
     sys.path = original_pythonpath
 
