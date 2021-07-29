@@ -75,7 +75,8 @@ def process(m, document):
         return
 
     if documentep.version:
-        pages = m.all(m.ep("pages", base=document["file_latest"]["url"]))
+        pages = m.all(m.ep("pages", base=document["version_active"]["url"]))
+        pages.extend(m.all(m.ep("pages", base=document["file_latest"]["url"])))
     else:
         pages = m.all(m.ep("pages", base=document["latest_version"]["url"]))
     complete_content = ""
@@ -85,8 +86,8 @@ def process(m, document):
             complete_content += content["content"]
         except:
             pass
-        content = m.get(m.ep("content", base=page["url"]))
         try:
+            content = m.get(m.ep("content", base=page["url"]))
             complete_content += content["content"]
         except:
             pass
@@ -141,10 +142,16 @@ def process(m, document):
                             metadata[meta_name],
                             document["url"],
                         )
-                        data = {
-                            "metadata_type_pk": meta["metadata_type"]["id"],
-                            "value": metadata[meta_name],
-                        }
+                        if documentep.version:
+                            data = {
+                                "metadata_type_id": meta["metadata_type"]["id"],
+                                "value": metadata[meta_name],
+                            }
+                        else:
+                            data = {
+                                "metadata_type_pk": meta["metadata_type"]["id"],
+                                "value": metadata[meta_name],
+                            }
                         result = m.post(
                             m.ep("metadata", base=document["url"]), json_data=data
                         )
