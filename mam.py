@@ -13,6 +13,7 @@ import sys
 from plugins import mambase
 from typing import List, Dict
 from pprint import pprint
+from functools import cmp_to_key
 
 # read initial config file - make sure we don't squash any loggers 
 # not specifically declared in the config file.
@@ -37,6 +38,16 @@ def get_mayan():
     m.load()
     return m
 
+def compare_tags(tag1, tag2):
+    if tag1 == "MAM":
+        return 1
+    if tag2 == "MAM":
+        return -1
+    if tag1 < tag2:
+        return -1
+    if tag1 > tag2:
+        return 1
+    return 0
 
 def main():
     m = get_mayan()
@@ -170,7 +181,7 @@ def process(m, document):
             tags.update(checker.get_tags(complete_content))
             tags.add("MAM")
     
-    for t in tags:
+    for t in sorted(tags, key=cmp_to_key(compare_tags)):
         if t not in m.tags:
             _logger.info("Tag %s not defined in system", t)
             continue
