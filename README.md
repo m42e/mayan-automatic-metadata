@@ -1,5 +1,9 @@
 # About Mayan automatic metadata
 
+> [!WARNING]  
+> This is currently unmaintained, as my use-case is done and I see this as a proof of concept.
+> Feel free to contact me if you like to maintain it.
+
 I wanted to be able to have my documents automatically tagged as I don't like to repeat these kinds of tasks over and over again.
 
 This MAM *mayan automatic metadata* tool consists of three parts:
